@@ -56,7 +56,7 @@ function createNewRuler(windowInfo) {
 	ruler.loadURL(`file://${__dirname}/src/app/ruler/ruler.html`);
 
 	// Uncomment the next line to open dev tools for debugging:
-	ruler.webContents.openDevTools({ mode: 'detach' });
+	// ruler.webContents.openDevTools({ mode: 'detach' });
 
 	ruler.focus();
 
