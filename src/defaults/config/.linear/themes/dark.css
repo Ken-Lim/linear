@@ -132,6 +132,8 @@ body {
     bottom: 2.5em;
     right: 3em;
     cursor: pointer;
+    -webkit-app-region: no-drag;
+    pointer-events: auto;    
 }
 
 .ruler__inner__border,

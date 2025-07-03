@@ -1,6 +1,6 @@
 'use strict';
 
-const remote = require('electron').remote;
+const remote = require('@electron/remote');
 const browserWindow = remote.getCurrentWindow();
 const dataStore = require('../../data-store');
 const ipc = require('electron').ipcRenderer;
@@ -151,6 +151,7 @@ window.addEventListener('resize', updateMeasures);
 
 ipc.on('settings-changed', loadSettings);
 ipc.on('toggle-center-guides', toggleCenterGuides);
+ipc.on('window-resized', updateMeasures);
 
 function toggleCenterGuides() {
 	showCenterGuides = !showCenterGuides;

@@ -27,6 +27,8 @@
 	height: 1.4em;
 	font-size: 1.8em;
 	cursor: pointer;
+	-webkit-app-region: no-drag;
+	pointer-events: auto;
 }
 
 .btn {
@@ -39,4 +41,9 @@
 
 .btn__inner {
 	font-family: 'Open Sans';
+}
+
+.themeIcon {
+	-webkit-app-region: no-drag;
+	pointer-events: auto;
 }

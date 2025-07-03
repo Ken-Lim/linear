@@ -53,7 +53,7 @@ ipc.on('update-theme', (evt, data) => {
 // Update the theme in the global dataStore and set ruler.html's stylesheet
 function updateTheme(filename) {
 	filename = filename || dataStore.readSettings('theme');
-	document.getElementById('rulertheme').setAttribute('href', dataStore.themesPath(filename));
+	document.getElementById('rulertheme').setAttribute('href', 'file://' + dataStore.themesPath(filename));
 	updateThemeMenu();
 }
 

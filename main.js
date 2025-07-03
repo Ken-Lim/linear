@@ -1,6 +1,7 @@
 'use strict';
 const path = require('path');
 const electron = require('electron');
+const remoteMain = require('@electron/remote/main');
 const app = electron.app;
 const BrowserWindow = electron.BrowserWindow;
 const globalShortcut = electron.globalShortcut;
@@ -18,6 +19,7 @@ let rulers;
 let settingsWindow;
 let helpWindow;
 let lastFocusedRuler;
+let showRuler = false;
 
 /**
  * Create a ruler window and push it to the `rulers` array. The ruler window
@@ -38,10 +40,25 @@ function createNewRuler(windowInfo) {
 		'min-width': 101,
 		'min-height': 101,
 		'standard-window': false,
-		'use-content-size': true
+		'use-content-size': true,
+		'webPreferences': {
+			'nodeIntegration': true,
+			'contextIsolation': false
+		}
 	});
 
+	ruler.on('resize', () => {
+		ruler.webContents.send('window-resized');
+	});
+
+	remoteMain.enable(ruler.webContents);
+
 	ruler.loadURL(`file://${__dirname}/src/app/ruler/ruler.html`);
+
+	// Uncomment the next line to open dev tools for debugging:
+	ruler.webContents.openDevTools({ mode: 'detach' });
+
+	ruler.focus();
 
 	ruler
 		.on('closed', () => {
@@ -78,8 +95,14 @@ function showHelp() {
 		height: 570,
 		frameless: true,
 		frame: false,
-		resizable: false
+		resizable: false,
+		'webPreferences': {
+			'nodeIntegration': true,
+			'contextIsolation': false
+		}
 	});
+
+	remoteMain.enable(helpWindow.webContents);
 
 	helpWindow.loadURL(`file://${__dirname}/src/app/help/help.html`);
 
@@ -88,8 +111,6 @@ function showHelp() {
 	});
 }
 
-let hidden = false;
-
 /**
  * Toggle a ruler asynchronously and give back a promise.
  * @param {BrowserWindow} ruler - The ruler to toggle
@@ -97,7 +118,7 @@ let hidden = false;
  */
 const toggleRuler = ruler => {
 	return new Promise(resolve => setTimeout(() => {
-		ruler[hidden ? 'hide' : 'show']();
+		ruler[showRuler ? 'show' : 'hide']();
 		resolve();
 	}));
 };
@@ -110,7 +131,7 @@ function toggleRulerCommand() {
 		return;
 	}
 
-	hidden = !hidden;
+	showRuler = !showRuler;
 
 	// Close all rulers sequentially. Doing otherwise doesn't toggle them
 	// properly. This is most likely an issue with Electron.
@@ -121,6 +142,7 @@ function toggleRulerCommand() {
 
 app.dock.hide();
 app.on('ready', () => {
+	remoteMain.initialize();
 	dataStore.init().then(setup);
 });
 
@@ -158,8 +180,14 @@ function setup() {
 				settingsWindow = new BrowserWindow({
 					width: 325,
 					height: 325,
-					alwaysOnTop: true
+					alwaysOnTop: true,
+					'webPreferences': {
+						'nodeIntegration': true,
+						'contextIsolation': false
+					}
 				});
+
+				remoteMain.enable(settingsWindow.webContents);
 
 				settingsWindow.loadURL(`file://${__dirname}/src/app/settings/settings.html`);
 
